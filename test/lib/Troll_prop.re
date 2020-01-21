@@ -38,7 +38,7 @@ describe("Troll Inverse", ({test}) => {
       ~name="oops_he_survived should always be inverse of i_got_one",
       troll_elf_arbitrary,
       ((troll, elf)) =>
-      troll |> i_got_one(elf) |> oops_he_survived(elf) == troll
+      troll |> i_got_one(elf) |> oops_he_survived(elf) |> scoring == scoring(troll)
     )
     |> expect.ext.qCheckTest;
     ()
