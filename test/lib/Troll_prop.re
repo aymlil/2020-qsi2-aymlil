@@ -47,8 +47,19 @@ describe("Troll Inverse", ({test}) => {
 
 describe("Troll Analogy", ({test}) => {
   test("i_got_one and i_got should be consistent", ({expect}) => {
-    /* Test go there */
-    ()
+    QCheck.Test.make(
+      ~count=1000,
+      ~name="i_got_one and i_got should be consistent",
+      troll_elf_int_arbitrary,
+      ((troll, elf, num)) =>{
+        let trolls = ref(troll);
+        for(i in 1 to num){
+          trolls := i_got_one(elf,trolls^);
+        };
+        (trolls^ |> scoring) == (troll |> i_got(num,elf) |> scoring)
+      }
+    )
+    |> expect.ext.qCheckTest;
   })
 });
 
@@ -56,7 +67,19 @@ describe("Troll Idempotence", ({test}) => {
   test(
     "all_elves_of_a_kind_resurrected brings the Troll killing list to a stable state",
     ({expect}) => {
-    /* Test go there */
+      QCheck.Test.make(
+        ~count=1000,
+        ~name="all_elves_of_a_kind_resurrected brings the Troll killing list to a stable state",
+        troll_elf_int_arbitrary,
+        ((troll, elf, num)) =>{
+          let trollTmp = ref(troll);
+          for(i in 1 to num){
+            trollTmp := all_elves_of_a_kind_resurrected(elf,trollTmp^);
+          };
+          (trollTmp^ |> scoring) == (troll |> all_elves_of_a_kind_resurrected(elf) |> scoring)
+        }
+      )
+      |> expect.ext.qCheckTest;
     ()
   })
 });
