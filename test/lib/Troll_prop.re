@@ -74,9 +74,47 @@ describe("Troll Idempotence", ({test}) => {
         ((troll, elf, num)) =>{
           let trollTmp = ref(troll);
           for(i in 1 to num){
-            trollTmp := all_elves_of_a_kind_resurrected(elf,trollTmp^);
+            trollTmp := all_elves_of_a_kind_resurrected(elf, trollTmp^);
           };
-          (trollTmp^ |> scoring) == (troll |> all_elves_of_a_kind_resurrected(elf) |> scoring)
+        num > 0 ?
+        (trollTmp^ |> scoring) == (troll |> all_elves_of_a_kind_resurrected(elf) |> scoring) : 
+        true
+        }
+      )
+      |> expect.ext.qCheckTest;
+    ()
+  })
+});
+
+describe("Troll Metamorphism", ({test}) => {
+  test(
+    "a Troll killing an Elf brings the Troll killing list increased by one",
+    ({expect}) => {
+      QCheck.Test.make(
+        ~count=1000,
+        ~name="a Troll killing an Elf brings the Troll killing list increased by one",
+        troll_elf_arbitrary,
+        ((troll, elf)) =>{
+        (troll |> i_got_one(elf) |> scoring) >= (troll |> scoring); 
+        }
+      )
+      |> expect.ext.qCheckTest;
+    ()
+  })
+});
+
+describe("Troll Injection", ({test}) => {
+  test(
+    "a Troll killing an Elf elf1 is different than the same Troll killing an elf elf2",
+    ({expect}) => {
+      QCheck.Test.make(
+        ~count=1000,
+        ~name="a Troll killing an Elf elf1 is different than the same Troll killing an elf elf2",
+        troll_two_elves_arbitrary,
+        ((troll, elf1, elf2)) =>{
+        elf1 != elf2 ?
+        (troll |> i_got_one(elf1)) != (troll |> i_got_one(elf2)):
+        true;
         }
       )
       |> expect.ext.qCheckTest;
